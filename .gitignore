@@ -1,0 +1,11 @@
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos temporários e de desenvolvimento
+*.log
+*.tmp
+node_modules/
+
+# Arquivos de agentes/Claude (não publicar)
+prompt-melhorias-dashboard.md
