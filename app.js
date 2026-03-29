@@ -138,28 +138,28 @@ function atualizarKPIs() {
         receitaPorMes.sort((a, b) => b.val - a.val);
         const rMelhor = receitaPorMes[0], rPior = receitaPorMes[receitaPorMes.length - 1];
         document.getElementById('kpiReceitaVar').innerHTML =
-            `<span class="var-melhor">▲ Melhor: ${MESES_ORDEM[rMelhor.mes]} (${fmt.moedaCurta(rMelhor.val)})</span> · <span class="var-pior">▼ Menor: ${MESES_ORDEM[rPior.mes]} (${fmt.moedaCurta(rPior.val)})</span>`;
+            `<span class="var-melhor">▲ Melhor: ${MESES_ORDEM[rMelhor.mes]} (${fmt.moedaCurta(rMelhor.val)})</span><br><span class="var-pior">▼ Menor: ${MESES_ORDEM[rPior.mes]} (${fmt.moedaCurta(rPior.val)})</span>`;
 
         // Clientes
         const clientesPorMes = mesesDisp.map(m => ({ mes: m, val: soma(porMesIdx[m], 'clientes') }));
         clientesPorMes.sort((a, b) => b.val - a.val);
         const cMelhor = clientesPorMes[0], cPior = clientesPorMes[clientesPorMes.length - 1];
         document.getElementById('kpiClientesVar').innerHTML =
-            `<span class="var-melhor">▲ Melhor: ${MESES_ORDEM[cMelhor.mes]} (${fmt.numero(cMelhor.val)})</span> · <span class="var-pior">▼ Menor: ${MESES_ORDEM[cPior.mes]} (${fmt.numero(cPior.val)})</span>`;
+            `<span class="var-melhor">▲ Melhor: ${MESES_ORDEM[cMelhor.mes]} (${fmt.numero(cMelhor.val)})</span><br><span class="var-pior">▼ Menor: ${MESES_ORDEM[cPior.mes]} (${fmt.numero(cPior.val)})</span>`;
 
         // Ocupação
         const ocupPorMes = mesesDisp.map(m => ({ mes: m, val: media(porMesIdx[m], 'ocupacao') }));
         ocupPorMes.sort((a, b) => b.val - a.val);
         const oMelhor = ocupPorMes[0], oPior = ocupPorMes[ocupPorMes.length - 1];
         document.getElementById('kpiOcupacaoVar').innerHTML =
-            `<span class="var-melhor">▲ Melhor: ${MESES_ORDEM[oMelhor.mes]} (${fmt.pct(oMelhor.val)})</span> · <span class="var-pior">▼ Menor: ${MESES_ORDEM[oPior.mes]} (${fmt.pct(oPior.val)})</span>`;
+            `<span class="var-melhor">▲ Melhor: ${MESES_ORDEM[oMelhor.mes]} (${fmt.pct(oMelhor.val)})</span><br><span class="var-pior">▼ Menor: ${MESES_ORDEM[oPior.mes]} (${fmt.pct(oPior.val)})</span>`;
 
         // Avaliação
         const avalPorMes = mesesDisp.map(m => ({ mes: m, val: media(porMesIdx[m], 'avaliacao') }));
         avalPorMes.sort((a, b) => b.val - a.val);
         const aMelhor = avalPorMes[0], aPior = avalPorMes[avalPorMes.length - 1];
         document.getElementById('kpiAvaliacaoVar').innerHTML =
-            `<span class="var-melhor">▲ Melhor: ${MESES_ORDEM[aMelhor.mes]} (${fmt.nota(aMelhor.val)})</span> · <span class="var-pior">▼ Menor: ${MESES_ORDEM[aPior.mes]} (${fmt.nota(aPior.val)})</span>`;
+            `<span class="var-melhor">▲ Melhor: ${MESES_ORDEM[aMelhor.mes]} (${fmt.nota(aMelhor.val)})</span><br><span class="var-pior">▼ Menor: ${MESES_ORDEM[aPior.mes]} (${fmt.nota(aPior.val)})</span>`;
     } else {
         // Apenas 1 mês: esconder indicadores
         ['kpiReceitaVar','kpiClientesVar','kpiOcupacaoVar','kpiAvaliacaoVar'].forEach(id => {
