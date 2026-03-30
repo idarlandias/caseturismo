@@ -724,9 +724,57 @@ function atualizarDashboard() {
     gerarInsights();
 }
 
-// ========== EXPORTAÇÃO PDF (via impressão do navegador) ==========
+// ========== EXPORTAÇÃO PDF (tema claro + impressão) ==========
 function exportarPDF() {
-    window.print();
+    // Aplicar tema claro
+    document.body.classList.add('tema-claro');
+
+    // Reconfigurar gráficos para cores escuras (legíveis em fundo branco)
+    const chartTextColor = '#334155';
+    const chartGridColor = '#e2e8f0';
+    Object.values(charts).forEach(chart => {
+        if (chart.options.scales) {
+            Object.values(chart.options.scales).forEach(scale => {
+                if (scale.ticks) scale.ticks.color = chartTextColor;
+                if (scale.grid) scale.grid.color = chartGridColor;
+                if (scale.title) scale.title.color = chartTextColor;
+            });
+        }
+        if (chart.options.plugins?.legend?.labels) {
+            chart.options.plugins.legend.labels.color = chartTextColor;
+        }
+        if (chart.options.plugins?.datalabels) {
+            chart.options.plugins.datalabels.color = chartTextColor;
+        }
+        chart.update('none');
+    });
+
+    // Imprimir e restaurar ao fechar
+    setTimeout(() => {
+        window.print();
+
+        // Restaurar tema escuro
+        document.body.classList.remove('tema-claro');
+
+        const darkTextColor = '#94a3b8';
+        const darkGridColor = 'rgba(255, 255, 255, 0.04)';
+        Object.values(charts).forEach(chart => {
+            if (chart.options.scales) {
+                Object.values(chart.options.scales).forEach(scale => {
+                    if (scale.ticks) scale.ticks.color = '#64748b';
+                    if (scale.grid) scale.grid.color = darkGridColor;
+                    if (scale.title) scale.title.color = darkTextColor;
+                });
+            }
+            if (chart.options.plugins?.legend?.labels) {
+                chart.options.plugins.legend.labels.color = darkTextColor;
+            }
+            if (chart.options.plugins?.datalabels) {
+                chart.options.plugins.datalabels.color = '#94a3b8';
+            }
+            chart.update('none');
+        });
+    }, 300);
 }
 
 // ========== EXPORTAÇÃO EXCEL ==========

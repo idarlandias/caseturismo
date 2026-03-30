@@ -630,108 +630,99 @@ body::before {
 }
 
 /* ========== PRINT ========== */
+/* ========== TEMA CLARO (classe aplicada via JS antes do print) ========== */
+body.tema-claro,
+body.tema-claro * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+body.tema-claro { background: #ffffff !important; color: #1e293b !important; }
+body.tema-claro::before { display: none !important; }
+
+body.tema-claro .header {
+    background: linear-gradient(135deg, #0c4a6e, #0369a1, #0ea5e9) !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+    border-bottom: none !important;
+}
+body.tema-claro .header::before,
+body.tema-claro .header::after { display: none !important; }
+body.tema-claro .header h1 {
+    background: none !important;
+    -webkit-text-fill-color: #ffffff !important;
+    color: #ffffff !important;
+}
+body.tema-claro .subtitle { color: rgba(255,255,255,0.85) !important; }
+body.tema-claro .badge { background: rgba(255,255,255,0.2) !important; color: #fff !important; border-color: rgba(255,255,255,0.35) !important; }
+
+body.tema-claro .filters-section { display: none !important; }
+
+body.tema-claro .kpi-card {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+}
+body.tema-claro .kpi-card::before { display: none !important; }
+body.tema-claro .kpi-value { color: #1e293b !important; }
+body.tema-claro .kpi-label { color: #64748b !important; }
+body.tema-claro .kpi-icon::after { display: none !important; }
+body.tema-claro .kpi-receita { background: #d1fae5 !important; color: #059669 !important; border: none !important; }
+body.tema-claro .kpi-clientes { background: #e0f2fe !important; color: #0284c7 !important; border: none !important; }
+body.tema-claro .kpi-ocupacao { background: #fef3c7 !important; color: #d97706 !important; border: none !important; }
+body.tema-claro .kpi-avaliacao { background: #ede9fe !important; color: #7c3aed !important; border: none !important; }
+body.tema-claro .kpi-var-positiva { color: #059669 !important; }
+body.tema-claro .kpi-var-negativa { color: #dc2626 !important; }
+
+body.tema-claro .chart-card {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+}
+body.tema-claro .chart-card::before { display: none !important; }
+body.tema-claro .chart-header h3 { color: #1e293b !important; }
+body.tema-claro .chart-header p { color: #64748b !important; }
+
+body.tema-claro .insights-card {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+}
+body.tema-claro .insights-card::before { display: none !important; }
+body.tema-claro .insights-header { border-bottom: 1px solid #e2e8f0 !important; }
+body.tema-claro .insights-header h3 { color: #1e293b !important; }
+body.tema-claro .insight-text { color: #334155 !important; }
+body.tema-claro .insight-highlight { color: #0369a1 !important; }
+body.tema-claro .insight-item { border-bottom: 1px solid #f1f5f9 !important; }
+body.tema-claro .insight-dot { box-shadow: none !important; }
+
+body.tema-claro .analise-card {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08) !important;
+}
+body.tema-claro .analise-card::before { display: none !important; }
+body.tema-claro .analise-card h3,
+body.tema-claro .analise-card h4 { color: #1e293b !important; }
+body.tema-claro .analise-card p,
+body.tema-claro .analise-card li { color: #334155 !important; }
+body.tema-claro .resumo-item { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+body.tema-claro .resumo-valor { color: #1e293b !important; }
+body.tema-claro .resumo-label { color: #64748b !important; }
+body.tema-claro .resumo-icon { color: #0369a1 !important; }
+
+body.tema-claro .footer { color: #94a3b8 !important; border-top: 1px solid #e2e8f0 !important; }
+body.tema-claro .footer-small { color: #94a3b8 !important; }
+
+body.tema-claro .logo::after { display: none !important; }
+
 @media print {
-    /* Forçar cores no print */
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-    /* Remover pseudo-elementos e efeitos */
-    body::before, .header::before, .header::after,
-    .kpi-card::before, .chart-card::before, .insights-card::before,
-    .kpi-icon::after, .logo::after { display: none !important; }
-
-    /* ===== MODO CLARO PARA IMPRESSÃO ===== */
-    body { background: #ffffff !important; color: #1e293b !important; }
-
-    /* Header */
-    .header {
-        background: #0369a1 !important;
-        backdrop-filter: none !important;
-        box-shadow: none !important;
-        border-bottom: none !important;
-        padding: 18px 0 !important;
-    }
-    .header h1 {
-        background: none !important;
-        -webkit-text-fill-color: #ffffff !important;
-        color: #ffffff !important;
-    }
-    .subtitle { color: rgba(255,255,255,0.85) !important; }
-    .badge {
-        background: rgba(255,255,255,0.2) !important;
-        color: #ffffff !important;
-        border-color: rgba(255,255,255,0.3) !important;
-    }
-
-    /* Esconder filtros e botões */
     .filters-section { display: none !important; }
-    .btn-limpar, .export-group { display: none !important; }
-
-    /* KPI Cards */
-    .kpi-card {
-        background: #ffffff !important;
-        backdrop-filter: none !important;
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: none !important;
-        break-inside: avoid;
-    }
-    .kpi-value { color: #1e293b !important; }
-    .kpi-label { color: #64748b !important; }
-    .kpi-icon { border: none !important; }
-    .kpi-receita { background: #d1fae5 !important; color: #059669 !important; }
-    .kpi-clientes { background: #e0f2fe !important; color: #0284c7 !important; }
-    .kpi-ocupacao { background: #fef3c7 !important; color: #d97706 !important; }
-    .kpi-avaliacao { background: #ede9fe !important; color: #7c3aed !important; }
-
-    /* Gráficos */
-    .chart-card {
-        background: #ffffff !important;
-        backdrop-filter: none !important;
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: none !important;
-        break-inside: avoid;
-    }
-    .chart-header h3 { color: #1e293b !important; }
-    .chart-header p { color: #64748b !important; }
-
-    /* Insights */
-    .insights-card {
-        background: #ffffff !important;
-        backdrop-filter: none !important;
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: none !important;
-        break-inside: avoid;
-    }
-    .insights-header { border-bottom: 1px solid #e2e8f0 !important; }
-    .insights-header h3 { color: #1e293b !important; }
-    .insight-text { color: #334155 !important; }
-    .insight-highlight { color: #0369a1 !important; }
-    .insight-item { border-bottom: 1px solid #f1f5f9 !important; }
-    .insight-dot { box-shadow: none !important; }
-
-    /* Análise descritiva */
-    .analise-card {
-        background: #ffffff !important;
-        backdrop-filter: none !important;
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: none !important;
-        break-inside: avoid;
-    }
-    .analise-card h3, .analise-card h4 { color: #1e293b !important; }
-    .analise-card p, .analise-card li { color: #334155 !important; }
-    .resumo-item { background: #f8fafc !important; border-color: #e2e8f0 !important; }
-    .resumo-valor { color: #1e293b !important; }
-    .resumo-label { color: #64748b !important; }
-
-    /* Footer */
-    .footer {
-        margin-top: 32px;
-        color: #94a3b8 !important;
-        border-top: 1px solid #e2e8f0 !important;
-    }
-    .footer-small { color: #94a3b8 !important; }
-
-    /* Layout */
+    .export-group, .btn-limpar { display: none !important; }
+    .kpi-card, .chart-card, .insights-card, .analise-card { break-inside: avoid; }
     .container { max-width: 100%; padding: 0 16px; }
-    .kpi-grid { gap: 12px; }
-    .charts-grid-2 { gap: 12px; }
 }
