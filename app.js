@@ -9,7 +9,8 @@ const NOMES_ESTADO = { CE: 'Ceará', RN: 'Rio Grande do Norte', PE: 'Pernambuco'
 let dadosFiltrados = [...DADOS_TURISMO];
 let charts = {};
 
-// Desativar datalabels globalmente para não afetar outros gráficos
+// Registrar e desativar datalabels globalmente para não afetar outros gráficos
+Chart.register(ChartDataLabels);
 Chart.defaults.plugins.datalabels = { display: false };
 
 // ========== UTILIDADES ==========
