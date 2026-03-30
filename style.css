@@ -868,7 +868,6 @@ body.tema-claro .logo::after { display: none !important; }
     /* ===== SUMÁRIO EXECUTIVO ===== */
     .relatorio-sumario {
         display: block !important;
-        page-break-after: always;
         padding: 20px 24px;
     }
     .sumario-titulo {
@@ -995,6 +994,15 @@ body.tema-claro .logo::after { display: none !important; }
     .chart-header h3 { font-size: 0.85rem !important; }
     .chart-header p { font-size: 0.65rem !important; margin-top: 1px !important; }
 
+    /* Ocupação: mais altura para exibir todas as 12 cidades */
+    #cardOcupacao .chart-body { height: 280px !important; }
+
+    /* Scatter: padding à direita para não cortar labels */
+    #cardScatter .chart-body { padding-right: 24px !important; }
+
+    /* Linha (receita por estado): garantir legenda visível */
+    #cardReceitaEstado .chart-body { height: 220px !important; }
+
     /* ===== Insights como seção do relatório ===== */
     .insights-card {
         break-inside: avoid;
@@ -1011,10 +1019,17 @@ body.tema-claro .logo::after { display: none !important; }
     .insights-analitica {
         break-inside: avoid;
         page-break-inside: avoid;
+        page-break-after: avoid !important;
     }
     .analitica-body p { font-size: 0.75rem !important; line-height: 1.5 !important; }
 
-    /* Footer como rodapé do relatório */
-    .footer { padding: 12px 0 !important; margin-top: 8px !important; font-size: 0.7rem !important; }
+    /* Footer como rodapé do relatório — evitar página vazia */
+    .footer {
+        padding: 8px 0 !important;
+        margin-top: 4px !important;
+        font-size: 0.7rem !important;
+        page-break-before: avoid !important;
+        break-before: avoid !important;
+    }
     .footer-small { font-size: 0.6rem !important; }
 }

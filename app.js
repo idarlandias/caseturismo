@@ -766,6 +766,29 @@ function gerarSumarioExecutivo() {
     const piorMes = rankMes[rankMes.length - 1];
     const variacao = ((melhorMes.total - piorMes.total) / piorMes.total * 100).toFixed(1);
 
+    // Dados por tipo de empreendimento
+    const porTipo = agrupar(dadosFiltrados, 'tipo');
+    const rankTipo = Object.keys(porTipo).map(t => ({
+        nome: t,
+        receita: soma(porTipo[t], 'receita'),
+        receitaMedia: soma(porTipo[t], 'receita') / porTipo[t].length,
+        clientes: soma(porTipo[t], 'clientes'),
+        ocupacao: media(porTipo[t], 'ocupacao'),
+        avaliacao: media(porTipo[t], 'avaliacao')
+    })).sort((a, b) => b.receita - a.receita);
+
+    // Dados de receita mensal consolidada
+    const receitaMensal = MESES_ORDEM.map((m, idx) => {
+        const registrosMes = dadosFiltrados.filter(d => d.mesIdx === idx);
+        return {
+            mes: MESES_NOME_COMPLETO[idx],
+            receita: soma(registrosMes, 'receita'),
+            clientes: soma(registrosMes, 'clientes'),
+            ocupacao: media(registrosMes, 'ocupacao'),
+            avaliacao: media(registrosMes, 'avaliacao')
+        };
+    });
+
     container.innerHTML = `
         <div class="sumario-grid">
             <div class="sumario-kpi">
@@ -847,6 +870,43 @@ function gerarSumarioExecutivo() {
                 <strong>4.</strong> Criar pacotes promocionais nos meses de baixa (${piorMes.mes}) para equilibrar a sazonalidade.
             </p>
         </div>
+
+        <div class="sumario-secao">
+            <h3>Desempenho por Tipo de Empreendimento</h3>
+            <table class="sumario-tabela">
+                <thead>
+                    <tr><th>Tipo</th><th>Receita Total</th><th>Receita Média</th><th>Clientes</th><th>Ocupação</th><th>Avaliação</th></tr>
+                </thead>
+                <tbody>
+                    ${rankTipo.map((t, i) => `<tr>
+                        <td>${i === 0 ? '<span class="sumario-destaque">' + t.nome + '</span>' : t.nome}</td>
+                        <td>${fmt.moeda(t.receita)}</td>
+                        <td>${fmt.moeda(Math.round(t.receitaMedia))}</td>
+                        <td>${fmt.numero(t.clientes)}</td>
+                        <td>${fmt.pct(t.ocupacao)}</td>
+                        <td>${fmt.nota(t.avaliacao)}</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="sumario-secao">
+            <h3>Receita Mensal Consolidada</h3>
+            <table class="sumario-tabela">
+                <thead>
+                    <tr><th>Mês</th><th>Receita</th><th>Clientes</th><th>Ocupação</th><th>Avaliação</th></tr>
+                </thead>
+                <tbody>
+                    ${receitaMensal.map(m => `<tr>
+                        <td>${m.mes}</td>
+                        <td>${fmt.moeda(m.receita)}</td>
+                        <td>${fmt.numero(m.clientes)}</td>
+                        <td>${fmt.pct(m.ocupacao)}</td>
+                        <td>${fmt.nota(m.avaliacao)}</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
     `;
 }
 
@@ -875,8 +935,33 @@ function exportarPDF() {
         });
     }
 
+    // Forçar legenda visível no gráfico de linhas e padding no scatter
+    if (charts['chartReceitaEstado']) {
+        charts['chartReceitaEstado'].options.plugins.legend.display = true;
+        charts['chartReceitaEstado'].options.plugins.legend.labels.font = { size: 9, family: 'Inter' };
+        charts['chartReceitaEstado'].options.plugins.legend.labels.padding = 10;
+        charts['chartReceitaEstado'].update('none');
+    }
+    if (charts['chartScatter']) {
+        charts['chartScatter'].options.layout = charts['chartScatter'].options.layout || {};
+        charts['chartScatter'].options.layout.padding = { right: 30 };
+        charts['chartScatter'].update('none');
+    }
+
     setTimeout(() => {
         window.print();
+
+        // Restaurar scatter padding
+        if (charts['chartScatter']) {
+            charts['chartScatter'].options.layout.padding = { right: 0 };
+            charts['chartScatter'].update('none');
+        }
+        // Restaurar legenda do gráfico de linhas
+        if (charts['chartReceitaEstado']) {
+            charts['chartReceitaEstado'].options.plugins.legend.labels.font = { size: 11, family: 'Inter' };
+            charts['chartReceitaEstado'].options.plugins.legend.labels.padding = 16;
+            charts['chartReceitaEstado'].update('none');
+        }
 
         // Restaurar se era escuro
         if (eraEscuro) {
