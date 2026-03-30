@@ -910,9 +910,240 @@ function gerarSumarioExecutivo() {
     `;
 }
 
+// ========== TABELAS DESCRITIVAS PARA PDF ==========
+function gerarTabelasPDF() {
+    // Remove tabelas anteriores se existirem
+    document.querySelectorAll('.pdf-tabela-descritiva').forEach(el => el.remove());
+
+    const receitaTotal = soma(dadosFiltrados, 'receita');
+    const estados = ['CE', 'PE', 'PI', 'RN'];
+    const porEstado = agrupar(dadosFiltrados, 'estado');
+    const porTipo = agrupar(dadosFiltrados, 'tipo');
+    const porCidade = agrupar(dadosFiltrados, 'cidade');
+
+    // ── 1. Receita Mensal por Estado ──
+    const receitaMesEstado = MESES_ORDEM.map((m, idx) => {
+        const row = { mes: MESES_NOME_COMPLETO[idx] };
+        let total = 0;
+        estados.forEach(est => {
+            const registros = (porEstado[est] || []).filter(d => d.mesIdx === idx);
+            const val = soma(registros, 'receita');
+            row[est] = val;
+            total += val;
+        });
+        row.total = total;
+        return row;
+    });
+    const totaisMes = receitaMesEstado.map(r => r.total);
+    const maxMes = Math.max(...totaisMes);
+    const minMes = Math.min(...totaisMes);
+
+    const tbl1 = `<div class="pdf-tabela-descritiva">
+        <table class="pdf-tbl">
+            <thead><tr>
+                <th>Mês</th><th>Ceará</th><th>Pernambuco</th><th>Piauí</th><th>R. G. do Norte</th><th>Total</th>
+            </tr></thead>
+            <tbody>${receitaMesEstado.map(r => {
+                const bold = r.total === maxMes || r.total === minMes;
+                const tag = bold ? '<strong>' : '';
+                const ctag = bold ? '</strong>' : '';
+                return `<tr>
+                    <td>${tag}${r.mes}${ctag}</td>
+                    <td>${tag}${fmt.moeda(r.CE)}${ctag}</td>
+                    <td>${tag}${fmt.moeda(r.PE)}${ctag}</td>
+                    <td>${tag}${fmt.moeda(r.PI)}${ctag}</td>
+                    <td>${tag}${fmt.moeda(r.RN)}${ctag}</td>
+                    <td>${tag}${fmt.moeda(r.total)}${ctag}</td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table>
+    </div>`;
+    document.getElementById('cardReceitaEstado').insertAdjacentHTML('afterend', tbl1);
+
+    // ── 2. Receita por Tipo de Empreendimento ──
+    const rankTipo = Object.keys(porTipo).map(t => ({
+        tipo: t,
+        receita: soma(porTipo[t], 'receita'),
+        receitaMedia: soma(porTipo[t], 'receita') / porTipo[t].length,
+        clientes: soma(porTipo[t], 'clientes'),
+        ocupacao: media(porTipo[t], 'ocupacao'),
+        avaliacao: media(porTipo[t], 'avaliacao')
+    })).sort((a, b) => b.receita - a.receita);
+
+    const cardReceitaTipo = document.getElementById('chartReceitaTipo').closest('.chart-card');
+    const tbl2 = `<div class="pdf-tabela-descritiva">
+        <table class="pdf-tbl">
+            <thead><tr>
+                <th>Tipo</th><th>Receita Total</th><th>% do Total</th><th>Receita Média</th><th>Clientes</th><th>Ocupação</th><th>Avaliação</th>
+            </tr></thead>
+            <tbody>${rankTipo.map(t => `<tr>
+                <td>${t.tipo}</td>
+                <td>${fmt.moeda(t.receita)}</td>
+                <td>${(t.receita / receitaTotal * 100).toFixed(1)}%</td>
+                <td>${fmt.moeda(Math.round(t.receitaMedia))}</td>
+                <td>${fmt.numero(t.clientes)}</td>
+                <td>${fmt.pct(t.ocupacao)}</td>
+                <td>${fmt.nota(t.avaliacao)}</td>
+            </tr>`).join('')}</tbody>
+        </table>
+    </div>`;
+    cardReceitaTipo.insertAdjacentHTML('afterend', tbl2);
+
+    // ── 3. Taxa de Ocupação por Cidade ──
+    const rankOcupacao = Object.keys(porCidade).map(c => ({
+        cidade: c,
+        estado: NOMES_ESTADO[porCidade[c][0].estado] || porCidade[c][0].estado,
+        ocupacao: media(porCidade[c], 'ocupacao')
+    })).sort((a, b) => b.ocupacao - a.ocupacao);
+
+    const tbl3 = `<div class="pdf-tabela-descritiva">
+        <table class="pdf-tbl">
+            <thead><tr>
+                <th>Cidade</th><th>Estado</th><th>Ocupação Média (%)</th><th>Ranking</th>
+            </tr></thead>
+            <tbody>${rankOcupacao.map((c, i) => {
+                let cls = '';
+                if (i < 3) cls = ' class="pdf-bg-green"';
+                else if (i >= rankOcupacao.length - 3) cls = ' class="pdf-bg-red"';
+                return `<tr${cls}>
+                    <td>${c.cidade}</td>
+                    <td>${c.estado}</td>
+                    <td>${fmt.pct(c.ocupacao)}</td>
+                    <td>${i + 1}º</td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table>
+    </div>`;
+    document.getElementById('cardOcupacao').insertAdjacentHTML('afterend', tbl3);
+
+    // ── 4. Clientes por Mês ──
+    const clientesMes = MESES_ORDEM.map((m, idx) => {
+        const registros = dadosFiltrados.filter(d => d.mesIdx === idx);
+        return { mes: MESES_NOME_COMPLETO[idx], clientes: soma(registros, 'clientes') };
+    });
+    const cardClientesMes = document.getElementById('chartClientesMes').closest('.chart-card');
+    const tbl4 = `<div class="pdf-tabela-descritiva">
+        <table class="pdf-tbl">
+            <thead><tr>
+                <th>Mês</th><th>Total de Clientes</th><th>Variação vs Mês Anterior</th>
+            </tr></thead>
+            <tbody>${clientesMes.map((m, i) => {
+                let variacao = '—';
+                if (i > 0) {
+                    const prev = clientesMes[i - 1].clientes;
+                    const pct = ((m.clientes - prev) / prev * 100).toFixed(1);
+                    variacao = (pct > 0 ? '+' : '') + pct + '%';
+                }
+                return `<tr>
+                    <td>${m.mes}</td>
+                    <td>${fmt.numero(m.clientes)}</td>
+                    <td>${variacao}</td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table>
+    </div>`;
+    cardClientesMes.insertAdjacentHTML('afterend', tbl4);
+
+    // ── 5. Avaliação Média por Cidade ──
+    const rankAvaliacao = Object.keys(porCidade).map(c => ({
+        cidade: c,
+        estado: NOMES_ESTADO[porCidade[c][0].estado] || porCidade[c][0].estado,
+        avaliacao: media(porCidade[c], 'avaliacao')
+    })).sort((a, b) => b.avaliacao - a.avaliacao);
+
+    const cardAvaliacao = document.getElementById('chartAvaliacaoCidade').closest('.chart-card');
+    const tbl5 = `<div class="pdf-tabela-descritiva">
+        <table class="pdf-tbl">
+            <thead><tr>
+                <th>Cidade</th><th>Estado</th><th>Avaliação Média</th><th>Classificação</th>
+            </tr></thead>
+            <tbody>${rankAvaliacao.map(c => {
+                let classif = 'Regular';
+                let cls = 'pdf-classif-regular';
+                if (c.avaliacao >= 4.2) { classif = 'Excelente'; cls = 'pdf-classif-excelente'; }
+                else if (c.avaliacao >= 3.8) { classif = 'Bom'; cls = 'pdf-classif-bom'; }
+                return `<tr>
+                    <td>${c.cidade}</td>
+                    <td>${c.estado}</td>
+                    <td>${fmt.nota(c.avaliacao)}</td>
+                    <td><span class="${cls}">${classif}</span></td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table>
+    </div>`;
+    cardAvaliacao.insertAdjacentHTML('afterend', tbl5);
+
+    // ── 6. Scatter: Receita vs Ocupação por Cidade ──
+    const rankScatter = Object.keys(porCidade).map(c => ({
+        cidade: c,
+        estado: NOMES_ESTADO[porCidade[c][0].estado] || porCidade[c][0].estado,
+        ocupacao: media(porCidade[c], 'ocupacao'),
+        receita: soma(porCidade[c], 'receita')
+    })).sort((a, b) => b.receita - a.receita);
+
+    const tbl6 = `<div class="pdf-tabela-descritiva">
+        <table class="pdf-tbl">
+            <thead><tr>
+                <th>Cidade</th><th>Estado</th><th>Ocupação Média (%)</th><th>Receita Total (R$)</th>
+            </tr></thead>
+            <tbody>${rankScatter.map(c => `<tr>
+                <td>${c.cidade}</td>
+                <td>${c.estado}</td>
+                <td>${fmt.pct(c.ocupacao)}</td>
+                <td>${fmt.moeda(c.receita)}</td>
+            </tr>`).join('')}</tbody>
+        </table>
+    </div>`;
+    document.getElementById('cardScatter').insertAdjacentHTML('afterend', tbl6);
+
+    // ── 7. Donuts de participação ──
+    // Donut Estado
+    const donutEstadoData = Object.keys(porEstado).sort().map(e => ({
+        nome: NOMES_ESTADO[e] || e,
+        receita: soma(porEstado[e], 'receita')
+    }));
+    const cardDonutEstado = document.getElementById('chartDonutEstado').closest('.chart-card');
+    const tbl7a = `<div class="pdf-tabela-descritiva pdf-tabela-donut">
+        <table class="pdf-tbl">
+            <thead><tr><th>Estado</th><th>Receita</th><th>% Participação</th></tr></thead>
+            <tbody>${donutEstadoData.map(e => `<tr>
+                <td>${e.nome}</td>
+                <td>${fmt.moeda(e.receita)}</td>
+                <td>${(e.receita / receitaTotal * 100).toFixed(1)}%</td>
+            </tr>`).join('')}</tbody>
+        </table>
+    </div>`;
+    cardDonutEstado.insertAdjacentHTML('afterend', tbl7a);
+
+    // Donut Tipo
+    const donutTipoData = Object.keys(porTipo).sort().map(t => ({
+        nome: t,
+        receita: soma(porTipo[t], 'receita')
+    }));
+    const cardDonutTipo = document.getElementById('chartDonutTipo').closest('.chart-card');
+    const tbl7b = `<div class="pdf-tabela-descritiva pdf-tabela-donut">
+        <table class="pdf-tbl">
+            <thead><tr><th>Tipo</th><th>Receita</th><th>% Participação</th></tr></thead>
+            <tbody>${donutTipoData.map(t => `<tr>
+                <td>${t.nome}</td>
+                <td>${fmt.moeda(t.receita)}</td>
+                <td>${(t.receita / receitaTotal * 100).toFixed(1)}%</td>
+            </tr>`).join('')}</tbody>
+        </table>
+    </div>`;
+    cardDonutTipo.insertAdjacentHTML('afterend', tbl7b);
+}
+
+function removerTabelasPDF() {
+    document.querySelectorAll('.pdf-tabela-descritiva').forEach(el => el.remove());
+}
+
 function exportarPDF() {
     // Gerar sumário executivo com dados atuais
     gerarSumarioExecutivo();
+
+    // Gerar tabelas descritivas abaixo dos gráficos
+    gerarTabelasPDF();
 
     const eraEscuro = !document.body.classList.contains('tema-claro');
 
@@ -978,6 +1209,9 @@ function exportarPDF() {
                 chart.update('none');
             });
         }
+
+        // Remover tabelas descritivas do DOM
+        removerTabelasPDF();
     }, 300);
 }
 

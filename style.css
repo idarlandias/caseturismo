@@ -797,6 +797,7 @@ body.tema-claro .logo::after { display: none !important; }
 .relatorio-capa,
 .relatorio-sumario,
 .relatorio-secao-titulo { display: none; }
+.pdf-tabela-descritiva { display: none; }
 
 @media print {
     @page { size: landscape; margin: 10mm; }
@@ -980,11 +981,6 @@ body.tema-claro .logo::after { display: none !important; }
     .kpi-grid { display: none !important; }
 
     /* ===== Gráficos compactos ===== */
-    .charts-grid-2 {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8px !important;
-        margin-bottom: 8px !important;
-    }
     .chart-card {
         break-inside: avoid;
         page-break-inside: avoid;
@@ -1002,6 +998,75 @@ body.tema-claro .logo::after { display: none !important; }
 
     /* Linha (receita por estado): garantir legenda visível */
     #cardReceitaEstado .chart-body { height: 220px !important; }
+
+    /* ===== Tabelas descritivas dos gráficos (PDF) ===== */
+    .pdf-tabela-descritiva {
+        display: block !important;
+        margin: 4px 0 10px;
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    .pdf-tabela-donut {
+        margin-top: 2px;
+    }
+    .pdf-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.68rem;
+        font-family: 'Inter', sans-serif;
+        background: #ffffff;
+    }
+    .pdf-tbl th {
+        background: #0c4a6e;
+        color: #ffffff;
+        text-align: left;
+        padding: 5px 8px;
+        font-weight: 600;
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        border-bottom: 2px solid #0369a1;
+    }
+    .pdf-tbl td {
+        padding: 4px 8px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #334155;
+    }
+    .pdf-tbl tr:nth-child(even) td { background: #f8fafc; }
+    .pdf-tbl strong { color: #0c4a6e; }
+    .pdf-bg-green td { background: #ecfdf5 !important; }
+    .pdf-bg-red td { background: #fef2f2 !important; }
+    .pdf-classif-excelente {
+        background: #059669; color: #fff; padding: 1px 6px;
+        border-radius: 3px; font-size: 0.6rem; font-weight: 600;
+    }
+    .pdf-classif-bom {
+        background: #0ea5e9; color: #fff; padding: 1px 6px;
+        border-radius: 3px; font-size: 0.6rem; font-weight: 600;
+    }
+    .pdf-classif-regular {
+        background: #f59e0b; color: #fff; padding: 1px 6px;
+        border-radius: 3px; font-size: 0.6rem; font-weight: 600;
+    }
+
+    /* Grids com tabelas: cada par gráfico+tabela em coluna */
+    .charts-grid-2 {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        margin-bottom: 8px !important;
+    }
+    .charts-grid-3 {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 8px !important;
+    }
+    .pdf-tabela-descritiva {
+        grid-column: span 2;
+    }
+    .pdf-tabela-donut {
+        grid-column: span 1;
+    }
 
     /* ===== Insights como seção do relatório ===== */
     .insights-card {
