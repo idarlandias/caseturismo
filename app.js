@@ -416,44 +416,52 @@ function chartAvaliacaoCidade() {
     });
 }
 
-// ========== GRÁFICO 6: Scatter Receita vs Ocupação (com datalabels de cidade) ==========
+// ========== GRÁFICO 6: Scatter Receita vs Ocupação por Tipo ==========
 function chartScatter() {
     const porTipo = agrupar(dadosFiltrados, 'tipo');
-    const datasets = Object.keys(porTipo).sort().map(tipo => {
-        const porCidade = agrupar(porTipo[tipo], 'cidade');
-        const pontos = Object.keys(porCidade).map(c => ({
-            x: media(porCidade[c], 'ocupacao'),
-            y: soma(porCidade[c], 'receita') / porCidade[c].length,
-            cidade: c
-        }));
-        return {
-            label: tipo,
-            data: pontos,
-            backgroundColor: CORES_TIPO[tipo] + 'AA',
-            borderColor: CORES_TIPO[tipo],
-            borderWidth: 2,
-            pointRadius: 7,
-            pointHoverRadius: 10
-        };
-    });
+    const tipos = Object.keys(porTipo).sort();
+    const pontos = tipos.map(t => ({
+        x: media(porTipo[t], 'ocupacao'),
+        y: media(porTipo[t], 'receita'),
+        tipo: t
+    }));
 
     criarOuAtualizar('chartScatter', {
         type: 'scatter',
-        data: { datasets },
+        data: {
+            datasets: [{
+                data: pontos,
+                backgroundColor: tipos.map(t => CORES_TIPO[t] + 'AA'),
+                borderColor: tipos.map(t => CORES_TIPO[t]),
+                borderWidth: 2,
+                pointRadius: 10,
+                pointHoverRadius: 14
+            }]
+        },
         options: {
             ...chartDefaults,
             scales: {
-                x: { ...chartDefaults.scales.x, title: { display: true, text: 'Ocupação Média (%)', font: { size: 11, family: 'Inter' } }, ticks: { ...chartDefaults.scales.x.ticks, callback: v => v + '%' } },
-                y: { ...chartDefaults.scales.y, title: { display: true, text: 'Receita Média (R$)', font: { size: 11, family: 'Inter' } }, ticks: { ...chartDefaults.scales.y.ticks, callback: v => fmt.moedaCurta(v) } }
+                x: { ...chartDefaults.scales.x, title: { display: true, text: 'Ocupação Média (%)', font: { size: 11, family: 'Inter' }, color: '#94a3b8' }, ticks: { ...chartDefaults.scales.x.ticks, callback: v => v + '%' } },
+                y: { ...chartDefaults.scales.y, title: { display: true, text: 'Receita Média (R$)', font: { size: 11, family: 'Inter' }, color: '#94a3b8' }, ticks: { ...chartDefaults.scales.y.ticks, callback: v => fmt.moedaCurta(v) } }
             },
             plugins: {
                 ...chartDefaults.plugins,
+                legend: { display: false },
                 tooltip: {
                     ...chartDefaults.plugins.tooltip,
                     callbacks: {
-                        title: ctxs => ctxs[0].raw.cidade || '',
-                        label: ctx => ctx.dataset.label + ': ' + fmt.pct(ctx.raw.x) + ' ocupação, ' + fmt.moeda(ctx.raw.y) + ' receita'
+                        title: ctxs => ctxs[0].raw.tipo || '',
+                        label: ctx => fmt.pct(ctx.raw.x) + ' ocupação, ' + fmt.moeda(ctx.raw.y) + ' receita'
                     }
+                },
+                datalabels: {
+                    display: true,
+                    formatter: (value) => value.tipo,
+                    color: '#f1f5f9',
+                    font: { size: 11, family: 'Inter', weight: '600' },
+                    anchor: 'end',
+                    align: 'top',
+                    offset: 6
                 }
             }
         }
