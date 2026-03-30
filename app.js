@@ -476,7 +476,11 @@ function chartScatter() {
                     color: '#94a3b8',
                     font: { size: 9, family: 'Inter' },
                     anchor: 'end',
-                    align: 'top',
+                    align: function(context) {
+                        const cidade = context.dataset.data[context.dataIndex].cidade;
+                        if (cidade === 'Natal') return 'right';
+                        return 'top';
+                    },
                     offset: 6
                 }
             }

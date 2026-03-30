@@ -480,7 +480,7 @@ body.tema-claro .btn-tema { color: #1e293b; border-color: rgba(0,0,0,0.15); back
 .chart-header h3 { font-size: 1rem; font-weight: 600; color: var(--text); }
 .chart-header p { font-size: 0.8rem; color: var(--text-muted); margin-top: 3px; }
 
-.chart-body { padding: 16px 20px 20px; position: relative; height: 300px; }
+.chart-body { padding: 16px 12px 20px; position: relative; height: 300px; }
 
 /* ========== INSIGHTS ========== */
 .insights-card {
