@@ -147,7 +147,35 @@ body::before {
 }
 
 .subtitle { font-size: 0.875rem; color: var(--text-secondary); font-weight: 400; }
-.header-right { display: flex; gap: 8px; }
+.header-right { display: flex; gap: 8px; align-items: center; }
+
+.btn-tema {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: #fbbf24;
+    cursor: pointer;
+    transition: all .3s;
+    padding: 0;
+    margin-left: 4px;
+}
+.btn-tema:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.25);
+    transform: rotate(15deg);
+}
+/* Escuro: mostra sol, esconde lua */
+.icon-lua { display: none; }
+.icon-sol { display: block; }
+/* Claro: mostra lua, esconde sol */
+body.tema-claro .icon-lua { display: block; }
+body.tema-claro .icon-sol { display: none; }
+body.tema-claro .btn-tema { color: #1e293b; border-color: rgba(0,0,0,0.15); background: rgba(0,0,0,0.05); }
 
 .badge {
     background: rgba(56, 189, 248, 0.1);
@@ -715,8 +743,53 @@ body.tema-claro .resumo-valor { color: #1e293b !important; }
 body.tema-claro .resumo-label { color: #64748b !important; }
 body.tema-claro .resumo-icon { color: #0369a1 !important; }
 
+/* Filtros modo claro */
+body.tema-claro .filters-section {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    backdrop-filter: none !important;
+}
+body.tema-claro .filter-group label { color: #64748b !important; }
+body.tema-claro .filter-group select {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: #1e293b !important;
+}
+body.tema-claro .filter-group select:focus {
+    border-color: #0ea5e9 !important;
+    box-shadow: 0 0 0 3px rgba(14,165,233,0.15) !important;
+}
+body.tema-claro .filter-group select option { background: #ffffff !important; color: #1e293b !important; }
+body.tema-claro .btn-limpar {
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+    border-color: #e2e8f0 !important;
+}
+body.tema-claro .btn-limpar:hover {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+    border-color: #fca5a5 !important;
+}
+
+/* Botões export modo claro */
+body.tema-claro .btn-pdf {
+    background: rgba(239,68,68,0.08) !important;
+    color: #ef4444 !important;
+    border-color: rgba(239,68,68,0.2) !important;
+}
+body.tema-claro .btn-excel {
+    background: rgba(16,185,129,0.08) !important;
+    color: #059669 !important;
+    border-color: rgba(16,185,129,0.2) !important;
+}
+
 body.tema-claro .footer { color: #94a3b8 !important; border-top: 1px solid #e2e8f0 !important; }
 body.tema-claro .footer-small { color: #94a3b8 !important; }
+
+/* Scrollbar modo claro */
+body.tema-claro::-webkit-scrollbar-track { background: #f1f5f9; }
+body.tema-claro::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); }
+body.tema-claro::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.25); }
 
 body.tema-claro .logo::after { display: none !important; }
 

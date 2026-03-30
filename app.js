@@ -724,56 +724,48 @@ function atualizarDashboard() {
     gerarInsights();
 }
 
-// ========== EXPORTAÇÃO PDF (tema claro + impressão) ==========
+// ========== EXPORTAÇÃO PDF ==========
 function exportarPDF() {
-    // Aplicar tema claro
-    document.body.classList.add('tema-claro');
+    const eraEscuro = !document.body.classList.contains('tema-claro');
 
-    // Reconfigurar gráficos para cores escuras (legíveis em fundo branco)
-    const chartTextColor = '#334155';
-    const chartGridColor = '#e2e8f0';
-    Object.values(charts).forEach(chart => {
-        if (chart.options.scales) {
-            Object.values(chart.options.scales).forEach(scale => {
-                if (scale.ticks) scale.ticks.color = chartTextColor;
-                if (scale.grid) scale.grid.color = chartGridColor;
-                if (scale.title) scale.title.color = chartTextColor;
-            });
-        }
-        if (chart.options.plugins?.legend?.labels) {
-            chart.options.plugins.legend.labels.color = chartTextColor;
-        }
-        if (chart.options.plugins?.datalabels) {
-            chart.options.plugins.datalabels.color = chartTextColor;
-        }
-        chart.update('none');
-    });
-
-    // Imprimir e restaurar ao fechar
-    setTimeout(() => {
-        window.print();
-
-        // Restaurar tema escuro
-        document.body.classList.remove('tema-claro');
-
-        const darkTextColor = '#94a3b8';
-        const darkGridColor = 'rgba(255, 255, 255, 0.04)';
+    // Forçar tema claro para o PDF
+    if (eraEscuro) {
+        document.body.classList.add('tema-claro');
+        const textColor = '#334155';
+        const gridColor = '#e2e8f0';
         Object.values(charts).forEach(chart => {
             if (chart.options.scales) {
                 Object.values(chart.options.scales).forEach(scale => {
-                    if (scale.ticks) scale.ticks.color = '#64748b';
-                    if (scale.grid) scale.grid.color = darkGridColor;
-                    if (scale.title) scale.title.color = darkTextColor;
+                    if (scale.ticks) scale.ticks.color = textColor;
+                    if (scale.grid) scale.grid.color = gridColor;
+                    if (scale.title) scale.title.color = textColor;
                 });
             }
-            if (chart.options.plugins?.legend?.labels) {
-                chart.options.plugins.legend.labels.color = darkTextColor;
-            }
-            if (chart.options.plugins?.datalabels) {
-                chart.options.plugins.datalabels.color = '#94a3b8';
-            }
+            if (chart.options.plugins?.legend?.labels) chart.options.plugins.legend.labels.color = textColor;
+            if (chart.options.plugins?.datalabels) chart.options.plugins.datalabels.color = textColor;
             chart.update('none');
         });
+    }
+
+    setTimeout(() => {
+        window.print();
+
+        // Restaurar se era escuro
+        if (eraEscuro) {
+            document.body.classList.remove('tema-claro');
+            Object.values(charts).forEach(chart => {
+                if (chart.options.scales) {
+                    Object.values(chart.options.scales).forEach(scale => {
+                        if (scale.ticks) scale.ticks.color = '#64748b';
+                        if (scale.grid) scale.grid.color = 'rgba(255, 255, 255, 0.04)';
+                        if (scale.title) scale.title.color = '#94a3b8';
+                    });
+                }
+                if (chart.options.plugins?.legend?.labels) chart.options.plugins.legend.labels.color = '#94a3b8';
+                if (chart.options.plugins?.datalabels) chart.options.plugins.datalabels.color = '#94a3b8';
+                chart.update('none');
+            });
+        }
     }, 300);
 }
 
@@ -868,13 +860,74 @@ function exportarExcel() {
     XLSX.writeFile(wb, 'relatorio_turismo_nordeste.xlsx');
 }
 
+// ========== ALTERNAR TEMA ==========
+function alternarTema() {
+    const isClaro = document.body.classList.toggle('tema-claro');
+
+    // Reconfigurar cores dos gráficos
+    const textColor = isClaro ? '#334155' : '#64748b';
+    const gridColor = isClaro ? '#e2e8f0' : 'rgba(255, 255, 255, 0.04)';
+    const titleColor = isClaro ? '#334155' : '#94a3b8';
+    const legendColor = isClaro ? '#334155' : '#94a3b8';
+    const datalabelColor = isClaro ? '#334155' : '#94a3b8';
+
+    Object.values(charts).forEach(chart => {
+        if (chart.options.scales) {
+            Object.values(chart.options.scales).forEach(scale => {
+                if (scale.ticks) scale.ticks.color = textColor;
+                if (scale.grid) scale.grid.color = gridColor;
+                if (scale.title) scale.title.color = titleColor;
+            });
+        }
+        if (chart.options.plugins?.legend?.labels) {
+            chart.options.plugins.legend.labels.color = legendColor;
+        }
+        if (chart.options.plugins?.datalabels) {
+            chart.options.plugins.datalabels.color = datalabelColor;
+        }
+        chart.update('none');
+    });
+
+    // Salvar preferência
+    localStorage.setItem('tema', isClaro ? 'claro' : 'escuro');
+}
+
+function carregarTema() {
+    const tema = localStorage.getItem('tema');
+    if (tema === 'claro') {
+        document.body.classList.add('tema-claro');
+    }
+}
+
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', () => {
+    carregarTema();
     inicializarFiltros();
     atualizarDashboard();
 
     document.getElementById('btnPDF').addEventListener('click', exportarPDF);
     document.getElementById('btnExcel').addEventListener('click', exportarExcel);
+    document.getElementById('btnTema').addEventListener('click', alternarTema);
+
+    // Se tema claro salvo, atualizar gráficos após renderização
+    if (localStorage.getItem('tema') === 'claro') {
+        setTimeout(() => {
+            const textColor = '#334155';
+            const gridColor = '#e2e8f0';
+            Object.values(charts).forEach(chart => {
+                if (chart.options.scales) {
+                    Object.values(chart.options.scales).forEach(scale => {
+                        if (scale.ticks) scale.ticks.color = textColor;
+                        if (scale.grid) scale.grid.color = gridColor;
+                        if (scale.title) scale.title.color = textColor;
+                    });
+                }
+                if (chart.options.plugins?.legend?.labels) chart.options.plugins.legend.labels.color = textColor;
+                if (chart.options.plugins?.datalabels) chart.options.plugins.datalabels.color = textColor;
+                chart.update('none');
+            });
+        }, 100);
+    }
 
     let resizeTimer;
     window.addEventListener('resize', () => {
