@@ -416,49 +416,65 @@ function chartAvaliacaoCidade() {
     });
 }
 
-// ========== GRÁFICO 6: Scatter Receita vs Ocupação por Tipo ==========
+// ========== GRÁFICO 6: Scatter Receita Total vs Ocupação por Cidade ==========
 function chartScatter() {
-    const porTipo = agrupar(dadosFiltrados, 'tipo');
-    const tipos = Object.keys(porTipo).sort();
-    const pontos = tipos.map(t => ({
-        x: media(porTipo[t], 'ocupacao'),
-        y: media(porTipo[t], 'receita'),
-        tipo: t
+    const porCidade = agrupar(dadosFiltrados, 'cidade');
+    const cidades = Object.keys(porCidade).sort();
+
+    // Agrupar por estado para criar datasets separados (legenda por estado)
+    const cidadesPorEstado = {};
+    cidades.forEach(c => {
+        const estado = porCidade[c][0].estado;
+        if (!cidadesPorEstado[estado]) cidadesPorEstado[estado] = [];
+        cidadesPorEstado[estado].push({
+            x: media(porCidade[c], 'ocupacao'),
+            y: soma(porCidade[c], 'receita'),
+            cidade: c,
+            estado: NOMES_ESTADO[estado] || estado
+        });
+    });
+
+    const datasets = Object.keys(cidadesPorEstado).sort().map(estado => ({
+        label: NOMES_ESTADO[estado] || estado,
+        data: cidadesPorEstado[estado],
+        backgroundColor: CORES_ESTADO[estado] + 'AA',
+        borderColor: CORES_ESTADO[estado],
+        borderWidth: 2,
+        pointRadius: 8,
+        pointHoverRadius: 12
     }));
 
     criarOuAtualizar('chartScatter', {
         type: 'scatter',
-        data: {
-            datasets: [{
-                data: pontos,
-                backgroundColor: tipos.map(t => CORES_TIPO[t] + 'AA'),
-                borderColor: tipos.map(t => CORES_TIPO[t]),
-                borderWidth: 2,
-                pointRadius: 10,
-                pointHoverRadius: 14
-            }]
-        },
+        data: { datasets },
         options: {
             ...chartDefaults,
             scales: {
                 x: { ...chartDefaults.scales.x, title: { display: true, text: 'Ocupação Média (%)', font: { size: 11, family: 'Inter' }, color: '#94a3b8' }, ticks: { ...chartDefaults.scales.x.ticks, callback: v => v + '%' } },
-                y: { ...chartDefaults.scales.y, title: { display: true, text: 'Receita Média (R$)', font: { size: 11, family: 'Inter' }, color: '#94a3b8' }, ticks: { ...chartDefaults.scales.y.ticks, callback: v => fmt.moedaCurta(v) } }
+                y: { ...chartDefaults.scales.y, title: { display: true, text: 'Receita Total (R$)', font: { size: 11, family: 'Inter' }, color: '#94a3b8' }, ticks: { ...chartDefaults.scales.y.ticks, callback: v => fmt.moedaCurta(v) } }
             },
             plugins: {
                 ...chartDefaults.plugins,
-                legend: { display: false },
+                legend: {
+                    position: 'bottom',
+                    labels: { padding: 16, usePointStyle: true, pointStyleWidth: 10, font: { size: 11, family: 'Inter' }, color: '#94a3b8' }
+                },
                 tooltip: {
                     ...chartDefaults.plugins.tooltip,
                     callbacks: {
-                        title: ctxs => ctxs[0].raw.tipo || '',
-                        label: ctx => fmt.pct(ctx.raw.x) + ' ocupação, ' + fmt.moeda(ctx.raw.y) + ' receita'
+                        title: ctxs => ctxs[0].raw.cidade || '',
+                        label: ctx => [
+                            ctx.raw.estado,
+                            'Ocupação: ' + fmt.pct(ctx.raw.x),
+                            'Receita: ' + fmt.moeda(ctx.raw.y)
+                        ]
                     }
                 },
                 datalabels: {
                     display: true,
-                    formatter: (value) => value.tipo,
-                    color: '#f1f5f9',
-                    font: { size: 11, family: 'Inter', weight: '600' },
+                    formatter: (value) => value.cidade,
+                    color: '#94a3b8',
+                    font: { size: 9, family: 'Inter' },
                     anchor: 'end',
                     align: 'top',
                     offset: 6
