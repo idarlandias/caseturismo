@@ -794,8 +794,60 @@ body.tema-claro::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.25); }
 body.tema-claro .logo::after { display: none !important; }
 
 @media print {
+    @page { size: landscape; margin: 8mm; }
+
     .filters-section { display: none !important; }
-    .export-group, .btn-limpar { display: none !important; }
-    .kpi-card, .chart-card, .insights-card, .analise-card { break-inside: avoid; }
-    .container { max-width: 100%; padding: 0 16px; }
+    .export-group, .btn-limpar, .btn-tema { display: none !important; }
+
+    .container { max-width: 100%; padding: 0 8px; }
+
+    /* Header compacto */
+    .header { padding: 12px 0 !important; }
+    .header h1 { font-size: 1.2rem !important; }
+    .subtitle { font-size: 0.75rem !important; }
+
+    /* KPIs compactos */
+    .kpi-grid { gap: 8px !important; margin: 10px 0 !important; }
+    .kpi-card { padding: 10px 14px !important; }
+    .kpi-value { font-size: 1.2rem !important; }
+    .kpi-label { font-size: 0.6rem !important; }
+    .kpi-icon { width: 36px !important; height: 36px !important; }
+    .kpi-icon svg { width: 18px !important; height: 18px !important; }
+
+    /* Gráficos menores para caber 2x2 por página */
+    .charts-grid-2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 8px !important;
+    }
+    .chart-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+    .chart-body { height: 200px !important; padding: 8px 12px 10px !important; }
+    .chart-header { padding: 10px 14px 0 !important; }
+    .chart-header h3 { font-size: 0.85rem !important; }
+    .chart-header p { font-size: 0.65rem !important; margin-top: 1px !important; }
+
+    /* Insights compacto */
+    .insights-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 8px !important;
+    }
+    .insights-header { padding: 10px 14px !important; }
+    .insights-header h3 { font-size: 0.85rem !important; }
+    .insight-item { padding: 5px 0 !important; }
+    .insight-text { font-size: 0.72rem !important; line-height: 1.4 !important; }
+    .insights-body { padding: 10px 14px !important; }
+
+    /* Análise descritiva compacta */
+    .analise-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    /* Footer compacto */
+    .footer { padding: 12px 0 !important; margin-top: 8px !important; font-size: 0.7rem !important; }
+    .footer-small { font-size: 0.6rem !important; }
 }
