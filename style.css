@@ -980,11 +980,11 @@ body.tema-claro .logo::after { display: none !important; }
     /* ===== KPIs no relatório ===== */
     .kpi-grid { display: none !important; }
 
-    /* ===== Gráficos — layout 1 coluna (largura total) ===== */
+    /* ===== Gráficos — layout 2 colunas ===== */
     .charts-grid-2 {
         display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 6px !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
         margin-bottom: 6px !important;
     }
     .chart-card {
@@ -1018,11 +1018,13 @@ body.tema-claro .logo::after { display: none !important; }
         margin: 2px 0 6px;
         break-inside: avoid;
         page-break-inside: avoid;
+        grid-column: span 2;
     }
     .pdf-tabela-donut {
         margin-top: 0;
         display: flex !important;
         align-items: flex-start;
+        grid-column: span 1;
     }
     .pdf-tabela-donut .pdf-tbl { margin-top: 8px; }
     .pdf-tbl {
