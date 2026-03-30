@@ -423,41 +423,6 @@ body::before {
 .resumo-valor { font-size: 0.85rem; color: var(--text); font-weight: 600; }
 .resumo-valor span { color: var(--text-secondary); font-weight: 400; font-size: .8rem; }
 
-/* PDF Overlay */
-.pdf-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(11,15,25,.85);
-    backdrop-filter: blur(8px);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-}
-.pdf-overlay.ativo { display: flex; }
-.pdf-overlay-inner {
-    background: var(--surface-solid);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 40px 56px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-}
-.pdf-spinner {
-    width: 48px;
-    height: 48px;
-    border: 3px solid rgba(56,189,248,.2);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin .8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.pdf-overlay-inner p { font-size: 1rem; font-weight: 600; color: var(--text); }
-.pdf-overlay-inner span { font-size: .8rem; color: var(--text-muted); }
-
 .chart-card {
     background: var(--surface);
     border-radius: var(--radius);
@@ -666,11 +631,86 @@ body::before {
 
 /* ========== PRINT ========== */
 @media print {
-    body, body::before { background: #0b0f19 !important; }
-    .filters-section { position: static; backdrop-filter: none; }
-    .kpi-card, .chart-card, .insights-card { break-inside: avoid; backdrop-filter: none; }
-    .header { backdrop-filter: none; }
-    .btn-limpar, .export-group { display: none; }
-    .footer { margin-top: 32px; }
+    /* Forçar cores no print */
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    /* Remover pseudo-elementos e efeitos que não renderizam */
+    body::before, .header::before, .header::after,
+    .kpi-card::before, .chart-card::before, .insights-card::before,
+    .kpi-icon::after, .logo::after { display: none !important; }
+
+    /* Fundo sólido escuro */
+    body { background: #0b0f19 !important; }
+
+    /* Header sólido */
+    .header {
+        background: #0f172a !important;
+        backdrop-filter: none !important;
+        box-shadow: none !important;
+        border-bottom: 2px solid #1e293b !important;
+    }
+    .header h1 {
+        background: none !important;
+        -webkit-text-fill-color: #f1f5f9 !important;
+        color: #f1f5f9 !important;
+    }
+
+    /* Esconder filtros e botões */
+    .filters-section { display: none !important; }
+    .btn-limpar, .export-group { display: none !important; }
+    .pdf-overlay { display: none !important; }
+
+    /* Cards com fundo sólido */
+    .kpi-card {
+        background: #1e293b !important;
+        backdrop-filter: none !important;
+        border: 1px solid #334155 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+    .kpi-icon {
+        border: none !important;
+    }
+    .kpi-receita { background: rgba(52, 211, 153, 0.2) !important; }
+    .kpi-clientes { background: rgba(56, 189, 248, 0.2) !important; }
+    .kpi-ocupacao { background: rgba(251, 191, 36, 0.2) !important; }
+    .kpi-avaliacao { background: rgba(167, 139, 250, 0.2) !important; }
+
+    /* Gráficos com fundo sólido */
+    .chart-card {
+        background: #1e293b !important;
+        backdrop-filter: none !important;
+        border: 1px solid #334155 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    /* Insights com fundo sólido */
+    .insights-card {
+        background: #1e293b !important;
+        backdrop-filter: none !important;
+        border: 1px solid #334155 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    /* Seção análise descritiva */
+    .analise-card {
+        background: #1e293b !important;
+        backdrop-filter: none !important;
+        border: 1px solid #334155 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+    }
+
+    /* Footer */
+    .footer {
+        margin-top: 32px;
+        border-top: 1px solid #334155 !important;
+    }
+
+    /* Ajustar layout para impressão */
+    .container { max-width: 100%; padding: 0 16px; }
+    .kpi-grid { gap: 12px; }
+    .charts-grid-2 { gap: 12px; }
 }

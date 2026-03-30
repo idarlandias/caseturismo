@@ -724,90 +724,9 @@ function atualizarDashboard() {
     gerarInsights();
 }
 
-// ========== EXPORTAÇÃO PDF (html2canvas + jsPDF) ==========
-async function exportarPDF() {
-    const btnPDF = document.getElementById('btnPDF');
-    const textoOriginal = btnPDF.innerHTML;
-
-    try {
-        // Desabilitar botão e mostrar estado de loading
-        btnPDF.disabled = true;
-        btnPDF.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 1H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z"/><polyline points="6 1 6 5"/><line x1="8" y1="9" x2="12" y2="9"/><line x1="8" y1="12" x2="12" y2="12"/></svg> Gerando...';
-
-        // Esconder elementos que não devem aparecer no PDF
-        const filtersSection = document.querySelector('.filters-section');
-        const exportGroup = document.querySelector('.export-group');
-        filtersSection.style.display = 'none';
-        if (exportGroup) exportGroup.style.display = 'none';
-
-        // Aguardar renderização
-        await new Promise(r => setTimeout(r, 100));
-
-        // Capturar a página inteira
-        const canvas = await html2canvas(document.body, {
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#0b0f19',
-            scrollY: -window.scrollY
-        });
-
-        // Restaurar elementos escondidos
-        filtersSection.style.display = '';
-        if (exportGroup) exportGroup.style.display = '';
-
-        // Gerar PDF em A4 landscape
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-
-        const ratio = canvasWidth / pageWidth;
-        const totalPdfHeight = canvasHeight / ratio;
-        let posY = 0;
-
-        while (posY < totalPdfHeight) {
-            if (posY > 0) pdf.addPage();
-
-            const srcY = posY * ratio;
-            const srcHeight = Math.min(pageHeight * ratio, canvasHeight - srcY);
-
-            const sliceCanvas = document.createElement('canvas');
-            sliceCanvas.width = canvasWidth;
-            sliceCanvas.height = srcHeight;
-            const sliceCtx = sliceCanvas.getContext('2d');
-            sliceCtx.drawImage(canvas, 0, srcY, canvasWidth, srcHeight, 0, 0, canvasWidth, srcHeight);
-
-            const imgData = sliceCanvas.toDataURL('image/jpeg', 0.92);
-            const sliceHeightMm = srcHeight / ratio;
-            pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, sliceHeightMm);
-
-            posY += pageHeight;
-        }
-
-        // Forçar download com nome correto via data URI
-        const pdfDataUri = pdf.output('datauristring');
-        const link = document.createElement('a');
-        link.href = pdfDataUri;
-        link.download = 'dashboard_turismo_nordeste.pdf';
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        setTimeout(() => document.body.removeChild(link), 100);
-    } catch (err) {
-        console.error('Erro ao gerar PDF:', err);
-        alert('Erro ao gerar PDF. Tente novamente.');
-        // Restaurar elementos caso erro ocorra antes da restauração
-        const filtersSection = document.querySelector('.filters-section');
-        const exportGroup = document.querySelector('.export-group');
-        filtersSection.style.display = '';
-        if (exportGroup) exportGroup.style.display = '';
-    } finally {
-        btnPDF.disabled = false;
-        btnPDF.innerHTML = textoOriginal;
-    }
+// ========== EXPORTAÇÃO PDF (via impressão do navegador) ==========
+function exportarPDF() {
+    window.print();
 }
 
 // ========== EXPORTAÇÃO EXCEL ==========
