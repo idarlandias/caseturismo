@@ -787,7 +787,16 @@ async function exportarPDF() {
             posY += pageHeight;
         }
 
-        pdf.save('dashboard_turismo_nordeste.pdf');
+        // Forçar download com nome correto via link
+        const blob = pdf.output('blob');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'dashboard_turismo_nordeste.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     } catch (err) {
         console.error('Erro ao gerar PDF:', err);
         alert('Erro ao gerar PDF. Tente novamente.');
