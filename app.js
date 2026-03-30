@@ -938,12 +938,11 @@ function exportarPDF() {
     // Forçar legenda visível no gráfico de linhas e padding no scatter
     if (charts['chartReceitaEstado']) {
         charts['chartReceitaEstado'].options.plugins.legend.display = true;
-        charts['chartReceitaEstado'].options.plugins.legend.labels.font = { size: 9, family: 'Inter' };
+        charts['chartReceitaEstado'].options.plugins.legend.labels.font.size = 9;
         charts['chartReceitaEstado'].options.plugins.legend.labels.padding = 10;
         charts['chartReceitaEstado'].update('none');
     }
     if (charts['chartScatter']) {
-        charts['chartScatter'].options.layout = charts['chartScatter'].options.layout || {};
         charts['chartScatter'].options.layout.padding = { right: 30 };
         charts['chartScatter'].update('none');
     }
@@ -958,7 +957,7 @@ function exportarPDF() {
         }
         // Restaurar legenda do gráfico de linhas
         if (charts['chartReceitaEstado']) {
-            charts['chartReceitaEstado'].options.plugins.legend.labels.font = { size: 11, family: 'Inter' };
+            charts['chartReceitaEstado'].options.plugins.legend.labels.font.size = 11;
             charts['chartReceitaEstado'].options.plugins.legend.labels.padding = 16;
             charts['chartReceitaEstado'].update('none');
         }
