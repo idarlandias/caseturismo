@@ -454,16 +454,6 @@ function chartScatter() {
                         title: ctxs => ctxs[0].raw.cidade || '',
                         label: ctx => ctx.dataset.label + ': ' + fmt.pct(ctx.raw.x) + ' ocupação, ' + fmt.moeda(ctx.raw.y) + ' receita'
                     }
-                },
-                // Ativar datalabels APENAS no scatter
-                datalabels: {
-                    display: true,
-                    formatter: (value) => value.cidade,
-                    color: '#94a3b8',
-                    font: { size: 9, family: 'Inter' },
-                    anchor: 'end',
-                    align: 'top',
-                    offset: 4
                 }
             }
         }
