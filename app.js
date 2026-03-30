@@ -787,16 +787,15 @@ async function exportarPDF() {
             posY += pageHeight;
         }
 
-        // Forçar download com nome correto via link
-        const blob = pdf.output('blob');
-        const url = URL.createObjectURL(blob);
+        // Forçar download com nome correto via data URI
+        const pdfDataUri = pdf.output('datauristring');
         const link = document.createElement('a');
-        link.href = url;
+        link.href = pdfDataUri;
         link.download = 'dashboard_turismo_nordeste.pdf';
+        link.style.display = 'none';
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        setTimeout(() => document.body.removeChild(link), 100);
     } catch (err) {
         console.error('Erro ao gerar PDF:', err);
         alert('Erro ao gerar PDF. Tente novamente.');
