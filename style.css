@@ -634,82 +634,103 @@ body::before {
     /* Forçar cores no print */
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-    /* Remover pseudo-elementos e efeitos que não renderizam */
+    /* Remover pseudo-elementos e efeitos */
     body::before, .header::before, .header::after,
     .kpi-card::before, .chart-card::before, .insights-card::before,
     .kpi-icon::after, .logo::after { display: none !important; }
 
-    /* Fundo sólido escuro */
-    body { background: #0b0f19 !important; }
+    /* ===== MODO CLARO PARA IMPRESSÃO ===== */
+    body { background: #ffffff !important; color: #1e293b !important; }
 
-    /* Header sólido */
+    /* Header */
     .header {
-        background: #0f172a !important;
+        background: #0369a1 !important;
         backdrop-filter: none !important;
         box-shadow: none !important;
-        border-bottom: 2px solid #1e293b !important;
+        border-bottom: none !important;
+        padding: 18px 0 !important;
     }
     .header h1 {
         background: none !important;
-        -webkit-text-fill-color: #f1f5f9 !important;
-        color: #f1f5f9 !important;
+        -webkit-text-fill-color: #ffffff !important;
+        color: #ffffff !important;
+    }
+    .subtitle { color: rgba(255,255,255,0.85) !important; }
+    .badge {
+        background: rgba(255,255,255,0.2) !important;
+        color: #ffffff !important;
+        border-color: rgba(255,255,255,0.3) !important;
     }
 
     /* Esconder filtros e botões */
     .filters-section { display: none !important; }
     .btn-limpar, .export-group { display: none !important; }
-    .pdf-overlay { display: none !important; }
 
-    /* Cards com fundo sólido */
+    /* KPI Cards */
     .kpi-card {
-        background: #1e293b !important;
+        background: #ffffff !important;
         backdrop-filter: none !important;
-        border: 1px solid #334155 !important;
+        border: 1px solid #e2e8f0 !important;
         box-shadow: none !important;
         break-inside: avoid;
     }
-    .kpi-icon {
-        border: none !important;
-    }
-    .kpi-receita { background: rgba(52, 211, 153, 0.2) !important; }
-    .kpi-clientes { background: rgba(56, 189, 248, 0.2) !important; }
-    .kpi-ocupacao { background: rgba(251, 191, 36, 0.2) !important; }
-    .kpi-avaliacao { background: rgba(167, 139, 250, 0.2) !important; }
+    .kpi-value { color: #1e293b !important; }
+    .kpi-label { color: #64748b !important; }
+    .kpi-icon { border: none !important; }
+    .kpi-receita { background: #d1fae5 !important; color: #059669 !important; }
+    .kpi-clientes { background: #e0f2fe !important; color: #0284c7 !important; }
+    .kpi-ocupacao { background: #fef3c7 !important; color: #d97706 !important; }
+    .kpi-avaliacao { background: #ede9fe !important; color: #7c3aed !important; }
 
-    /* Gráficos com fundo sólido */
+    /* Gráficos */
     .chart-card {
-        background: #1e293b !important;
+        background: #ffffff !important;
         backdrop-filter: none !important;
-        border: 1px solid #334155 !important;
+        border: 1px solid #e2e8f0 !important;
         box-shadow: none !important;
         break-inside: avoid;
     }
+    .chart-header h3 { color: #1e293b !important; }
+    .chart-header p { color: #64748b !important; }
 
-    /* Insights com fundo sólido */
+    /* Insights */
     .insights-card {
-        background: #1e293b !important;
+        background: #ffffff !important;
         backdrop-filter: none !important;
-        border: 1px solid #334155 !important;
+        border: 1px solid #e2e8f0 !important;
         box-shadow: none !important;
         break-inside: avoid;
     }
+    .insights-header { border-bottom: 1px solid #e2e8f0 !important; }
+    .insights-header h3 { color: #1e293b !important; }
+    .insight-text { color: #334155 !important; }
+    .insight-highlight { color: #0369a1 !important; }
+    .insight-item { border-bottom: 1px solid #f1f5f9 !important; }
+    .insight-dot { box-shadow: none !important; }
 
-    /* Seção análise descritiva */
+    /* Análise descritiva */
     .analise-card {
-        background: #1e293b !important;
+        background: #ffffff !important;
         backdrop-filter: none !important;
-        border: 1px solid #334155 !important;
+        border: 1px solid #e2e8f0 !important;
         box-shadow: none !important;
         break-inside: avoid;
     }
+    .analise-card h3, .analise-card h4 { color: #1e293b !important; }
+    .analise-card p, .analise-card li { color: #334155 !important; }
+    .resumo-item { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+    .resumo-valor { color: #1e293b !important; }
+    .resumo-label { color: #64748b !important; }
 
     /* Footer */
     .footer {
         margin-top: 32px;
-        border-top: 1px solid #334155 !important;
+        color: #94a3b8 !important;
+        border-top: 1px solid #e2e8f0 !important;
     }
+    .footer-small { color: #94a3b8 !important; }
 
-    /* Ajustar layout para impressão */
+    /* Layout */
     .container { max-width: 100%; padding: 0 16px; }
     .kpi-grid { gap: 12px; }
     .charts-grid-2 { gap: 12px; }
