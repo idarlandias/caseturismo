@@ -12,6 +12,45 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
+    <!-- Capa do Relatório (visível apenas no print) -->
+    <div class="relatorio-capa" id="relatorioCapa">
+        <div class="capa-conteudo">
+            <div class="capa-logo">
+                <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#0369a1"/>
+                    <path d="M8 20 L16 10 L24 20" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <circle cx="16" cy="8" r="2" fill="#fbbf24"/>
+                </svg>
+            </div>
+            <h1 class="capa-titulo">Relatório de Desempenho</h1>
+            <h2 class="capa-subtitulo">Turismo no Nordeste Brasileiro</h2>
+            <div class="capa-linha"></div>
+            <div class="capa-meta">
+                <p><strong>Projeto:</strong> Inova Talentos — Case Prático</p>
+                <p><strong>Analista:</strong> Idarlan Dias</p>
+                <p><strong>Período:</strong> Janeiro a Dezembro (12 meses)</p>
+                <p><strong>Abrangência:</strong> 4 estados, 12 cidades, 3 segmentos</p>
+                <p><strong>Data de emissão:</strong> <span id="capaData"></span></p>
+            </div>
+            <div class="capa-linha"></div>
+            <p class="capa-rodape">Este relatório apresenta a análise de desempenho de empreendimentos turísticos no Nordeste, com foco em receita, ocupação, volume de clientes e satisfação, visando apoiar decisões estratégicas do gestor.</p>
+        </div>
+    </div>
+
+    <!-- Sumário Executivo (visível apenas no print) -->
+    <div class="relatorio-sumario" id="relatorioSumario">
+        <h2 class="sumario-titulo">Sumário Executivo</h2>
+        <div class="sumario-conteudo" id="sumarioConteudo">
+            <!-- Preenchido via JS -->
+        </div>
+    </div>
+
+    <!-- Cabeçalho de seção para gráficos no relatório -->
+    <div class="relatorio-secao-titulo" id="relatorioSecaoGraficos">
+        <h2>Análise Visual dos Indicadores</h2>
+        <p>Visualizações interativas dos principais indicadores de desempenho do setor turístico</p>
+    </div>
+
     <!-- Header -->
     <header class="header">
         <div class="header-content">
@@ -69,9 +108,9 @@
                 </div>
                 <button class="btn-limpar" id="btnLimpar">Limpar Filtros</button>
                 <div class="export-group">
-                    <button class="btn-export btn-pdf" id="btnPDF" title="Exportar relatório em PDF">
+                    <button class="btn-export btn-pdf" id="btnPDF" title="Gerar relatório em PDF">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 1H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2z"/><polyline points="6 1 6 5"/><line x1="8" y1="9" x2="12" y2="9"/><line x1="8" y1="12" x2="12" y2="12"/></svg>
-                        PDF
+                        Gerar Relatório
                     </button>
                     <button class="btn-export btn-excel" id="btnExcel" title="Exportar dados em Excel">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="14" height="14" rx="2"/><line x1="1" y1="5" x2="15" y2="5"/><line x1="1" y1="9" x2="15" y2="9"/><line x1="5" y1="1" x2="5" y2="15"/><line x1="10" y1="1" x2="10" y2="15"/></svg>

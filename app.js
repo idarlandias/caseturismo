@@ -724,8 +724,136 @@ function atualizarDashboard() {
     gerarInsights();
 }
 
-// ========== EXPORTAÇÃO PDF ==========
+// ========== GERAR RELATÓRIO PDF ==========
+function gerarSumarioExecutivo() {
+    const container = document.getElementById('sumarioConteudo');
+    const hoje = new Date();
+    document.getElementById('capaData').textContent = hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    const receitaTotal = soma(dadosFiltrados, 'receita');
+    const totalClientes = soma(dadosFiltrados, 'clientes');
+    const mediaOcupacao = media(dadosFiltrados, 'ocupacao');
+    const mediaAvaliacao = media(dadosFiltrados, 'avaliacao');
+
+    // Ranking por estado
+    const porEstado = agrupar(dadosFiltrados, 'estado');
+    const rankEstado = Object.keys(porEstado).map(e => ({
+        nome: NOMES_ESTADO[e] || e,
+        receita: soma(porEstado[e], 'receita'),
+        clientes: soma(porEstado[e], 'clientes'),
+        ocupacao: media(porEstado[e], 'ocupacao'),
+        avaliacao: media(porEstado[e], 'avaliacao')
+    })).sort((a, b) => b.receita - a.receita);
+
+    // Ranking por cidade
+    const porCidade = agrupar(dadosFiltrados, 'cidade');
+    const rankCidade = Object.keys(porCidade).map(c => ({
+        nome: c,
+        estado: NOMES_ESTADO[porCidade[c][0].estado] || porCidade[c][0].estado,
+        receita: soma(porCidade[c], 'receita'),
+        ocupacao: media(porCidade[c], 'ocupacao'),
+        avaliacao: media(porCidade[c], 'avaliacao')
+    })).sort((a, b) => b.receita - a.receita);
+
+    // Melhor e pior mês
+    const porMes = agrupar(dadosFiltrados, 'mesIdx');
+    const rankMes = Object.keys(porMes).map(m => ({
+        mes: MESES_NOME_COMPLETO[parseInt(m)],
+        total: soma(porMes[m], 'receita')
+    })).sort((a, b) => b.total - a.total);
+
+    const melhorMes = rankMes[0];
+    const piorMes = rankMes[rankMes.length - 1];
+    const variacao = ((melhorMes.total - piorMes.total) / piorMes.total * 100).toFixed(1);
+
+    container.innerHTML = `
+        <div class="sumario-grid">
+            <div class="sumario-kpi">
+                <div class="sumario-kpi-valor">${fmt.moedaCurta(receitaTotal)}</div>
+                <div class="sumario-kpi-label">Receita Total</div>
+                <div class="sumario-kpi-detalhe">Acumulado 12 meses</div>
+            </div>
+            <div class="sumario-kpi">
+                <div class="sumario-kpi-valor">${fmt.numero(totalClientes)}</div>
+                <div class="sumario-kpi-label">Total de Clientes</div>
+                <div class="sumario-kpi-detalhe">Atendidos no período</div>
+            </div>
+            <div class="sumario-kpi">
+                <div class="sumario-kpi-valor">${fmt.pct(mediaOcupacao)}</div>
+                <div class="sumario-kpi-label">Ocupação Média</div>
+                <div class="sumario-kpi-detalhe">Média geral dos destinos</div>
+            </div>
+            <div class="sumario-kpi">
+                <div class="sumario-kpi-valor">${fmt.nota(mediaAvaliacao)}/5</div>
+                <div class="sumario-kpi-label">Satisfação</div>
+                <div class="sumario-kpi-detalhe">Avaliação média dos clientes</div>
+            </div>
+        </div>
+
+        <div class="sumario-secao">
+            <h3>Desempenho por Estado</h3>
+            <table class="sumario-tabela">
+                <thead>
+                    <tr><th>Estado</th><th>Receita Total</th><th>% do Total</th><th>Clientes</th><th>Ocupação</th><th>Avaliação</th></tr>
+                </thead>
+                <tbody>
+                    ${rankEstado.map((e, i) => `<tr>
+                        <td>${i === 0 ? '<span class="sumario-destaque">' + e.nome + '</span>' : e.nome}</td>
+                        <td>${fmt.moeda(e.receita)}</td>
+                        <td>${(e.receita / receitaTotal * 100).toFixed(1)}%</td>
+                        <td>${fmt.numero(e.clientes)}</td>
+                        <td>${fmt.pct(e.ocupacao)}</td>
+                        <td>${fmt.nota(e.avaliacao)}</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="sumario-secao">
+            <h3>Top 5 Cidades por Receita</h3>
+            <table class="sumario-tabela">
+                <thead>
+                    <tr><th>Cidade</th><th>Estado</th><th>Receita Total</th><th>Ocupação</th><th>Avaliação</th></tr>
+                </thead>
+                <tbody>
+                    ${rankCidade.slice(0, 5).map((c, i) => `<tr>
+                        <td>${i === 0 ? '<span class="sumario-destaque">' + c.nome + '</span>' : c.nome}</td>
+                        <td>${c.estado}</td>
+                        <td>${fmt.moeda(c.receita)}</td>
+                        <td>${fmt.pct(c.ocupacao)}</td>
+                        <td>${fmt.nota(c.avaliacao)}</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="sumario-secao">
+            <h3>Análise de Sazonalidade</h3>
+            <p class="sumario-texto">
+                O mês de maior faturamento foi <span class="sumario-destaque">${melhorMes.mes}</span> com ${fmt.moeda(melhorMes.total)},
+                enquanto <span class="sumario-destaque">${piorMes.mes}</span> registrou o menor volume com ${fmt.moeda(piorMes.total)}
+                — uma variação de <span class="sumario-destaque">${variacao}%</span>.
+                Esta amplitude sazonal sugere oportunidades para campanhas de incentivo em períodos de baixa demanda
+                e otimização de preços nos meses de pico.
+            </p>
+        </div>
+
+        <div class="sumario-secao">
+            <h3>Recomendações Estratégicas</h3>
+            <p class="sumario-texto">
+                <strong>1.</strong> Investir em marketing direcionado para destinos com baixa ocupação (como Pipa e Porto de Galinhas) nos meses de menor movimento.<br>
+                <strong>2.</strong> Replicar as boas práticas de Canoa Quebrada (maior avaliação) nos demais destinos para elevar a satisfação geral.<br>
+                <strong>3.</strong> Explorar o potencial de receita das agências, que apresentam o maior ticket médio por unidade.<br>
+                <strong>4.</strong> Criar pacotes promocionais nos meses de baixa (${piorMes.mes}) para equilibrar a sazonalidade.
+            </p>
+        </div>
+    `;
+}
+
 function exportarPDF() {
+    // Gerar sumário executivo com dados atuais
+    gerarSumarioExecutivo();
+
     const eraEscuro = !document.body.classList.contains('tema-claro');
 
     // Forçar tema claro para o PDF
